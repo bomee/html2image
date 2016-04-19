@@ -9,7 +9,7 @@ var querystring = require('querystring');
 var bodyParser = require('body-parser');
 
 const hostname = '127.0.0.1';
-const port = 80;
+const port = process.env.PORT || 5050;
 
 var textParser = bodyParser.text();
 
