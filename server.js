@@ -45,7 +45,7 @@ app.all('/html2png', function (req, res) {
   var fileName = 'temp_' + (new Date()).getTime() + '.png';
   var html = req.body || req.query.html;
   //console.log(html);
-  childProcess.execFile(binPath, ['phantomjs-html2png.js', html, fileName], function(err, stdout, stderr) {
+  childProcess.execFile(binPath, ['phantomjs-html2png.js', html, fileName, req.query.w, req.query.h], function(err, stdout, stderr) {
     !err && res.sendFile(fileName, {root:__dirname}, function (err) {
       if (err) {
         console.log(err);
