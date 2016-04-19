@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var path = require('path');
-var childProcess = require('child_process');
+var execFile = require('child_process').execFile;
 var phantomjs = require('phantomjs-prebuilt');
 var binPath = phantomjs.path;
 var fs = require('fs');
@@ -11,12 +11,14 @@ var bodyParser = require('body-parser');
 const hostname = '127.0.0.1';
 const port = process.env.PORT || 5050;
 
-var textParser = bodyParser.text();
+var tempFile = function(ext){
+  return `temp_${timestamp}.${ext}`;
+}
 
 app.get('/echart2png', function (req, res) {
-  var fileName = 'temp_' + (new Date()).getTime() + '.png';
+  var fileName = tempFile('png');
   var url = `http://${hostname}:${port}/echart?` + querystring.stringify(req.query);
-  childProcess.execFile(binPath, ['phantomjs-url2png.js', url, fileName], function(err, stdout, stderr) {
+  execFile(binPath, ['phantomjs-url2png.js', url, fileName], function(err, stdout, stderr) {
     !err && res.sendFile(fileName, {root:__dirname}, function (err) {
       if (err) {
         console.log(err);
@@ -28,9 +30,9 @@ app.get('/echart2png', function (req, res) {
 });
 
 app.get('/highcharts2png', function (req, res) {
-  var fileName = 'temp_' + (new Date()).getTime() + '.png';
+  var fileName = tempFile('png');
   var url = `http://${hostname}:${port}/highcharts?` + querystring.stringify(req.query);
-  childProcess.execFile(binPath, ['phantomjs-url2png.js', url, fileName], function(err, stdout, stderr) {
+  execFile(binPath, ['phantomjs-url2png.js', url, fileName], function(err, stdout, stderr) {
     !err && res.sendFile(fileName, {root:__dirname}, function (err) {
       if (err) {
         console.log(err);
@@ -42,10 +44,8 @@ app.get('/highcharts2png', function (req, res) {
 });
 
 app.all('/html2png', function (req, res) {
-  var fileName = 'temp_' + (new Date()).getTime() + '.png';
-  var html = req.body || req.query.html;
-  //console.log(html);
-  childProcess.execFile(binPath, ['phantomjs-html2png.js', html, fileName, req.query.w, req.query.h], function(err, stdout, stderr) {
+  var fileName = tempFile('png');
+  execFile(binPath, ['phantomjs-html2png.js', req.body || req.query.html, fileName, req.query.w, req.query.h], function(err, stdout, stderr) {
     !err && res.sendFile(fileName, {root:__dirname}, function (err) {
       if (err) {
         console.log(err);
@@ -57,9 +57,8 @@ app.all('/html2png', function (req, res) {
 });
 
 app.all('/html2pdf', function (req, res) {
-  var fileName = 'temp_' + (new Date()).getTime() + '.pdf';
-  var html = req.body || req.query.html;
-  childProcess.execFile(binPath, ['phantomjs-html2pdf.js', html, fileName], function(err, stdout, stderr) {
+  var fileName = tempFile('pdf');
+  execFile(binPath, ['phantomjs-html2pdf.js', req.body || req.query.html, fileName], function(err, stdout, stderr) {
     !err && res.sendFile(fileName, {root:__dirname}, function (err) {
       if (err) {
         console.log(err);
@@ -71,7 +70,6 @@ app.all('/html2pdf', function (req, res) {
 });
 
 app.get('/echart', function(req, res){
-  //console.log(req.query.opts);
   res.send(`
     <!DOCTYPE html>
     <html>
@@ -85,7 +83,6 @@ app.get('/echart', function(req, res){
 });
 
 app.get('/highcharts', function(req, res){
-  //console.log(req.query.opts);
   res.send(`
     <!DOCTYPE html>
     <html>
