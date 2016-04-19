@@ -1,0 +1,21 @@
+{
+    "name": "html2image-server",
+    "version": "0.0.2",
+    "description":"use phantomjs export html to image.",
+    "dependencies": {
+        "phantomjs-prebuilt":"~2.1.3",
+        "express":"~4.13.4",
+        "body-parser":"~1.15.0"
+    },
+    "private": true,
+    "author": {
+    	"name": "bomee",
+	"email": "shiaupo@qq.com"
+    },
+    "engines": {
+    	"node": "4.2.6"
+    },
+    "scripts": {
+        "start": "node server.js"
+    }
+}
